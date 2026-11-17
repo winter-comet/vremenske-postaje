@@ -1,3 +1,16 @@
+// Vremenske-postaje prikaže delovanje paketa [vreme]: ustvari pet vremenskih
+// postaj z začetnimi meritvami, pokaže, kako paket obravnava neveljavne
+// podatke, ter izpiše meritve in poročilo.
+//
+// Uporaba:
+//
+//	vremenske-postaje [--minTemp=T] [--maxTemp=T] [--stMeritev=N]
+//
+// Stikala:
+//
+//	--minTemp    najnižja dovoljena temperatura meritve v °C (privzeto -50)
+//	--maxTemp    najvišja dovoljena temperatura meritve v °C (privzeto 50)
+//	--stMeritev  najmanjše število meritev za izračun statistike (privzeto 3)
 package main
 
 import (
@@ -12,7 +25,7 @@ import (
 
 func main() {
 	cmd := &cli.Command{
-		Name:  "vremenskaepostaje",
+		Name:  "vremenske-postaje",
 		Usage: "beleži meritve vremenskih postaj",
 		Flags: []cli.Flag{
 			&cli.FloatFlag{
@@ -22,7 +35,7 @@ func main() {
 			},
 			&cli.FloatFlag{
 				Name:  "maxTemp",
-				Usage: "Najvišja dovoljena temperatura meritve v °C",
+				Usage: "najvišja dovoljena temperatura meritve v °C",
 				Value: 50,
 			},
 			&cli.IntFlag{
@@ -41,6 +54,8 @@ func main() {
 	}
 }
 
+// zazeni preveri vrednosti stikal in na primeru petih postaj prikaže
+// delovanje paketa vreme.
 func zazeni(minTemp, maxTemp float64, stMeritev int) error {
 	if minTemp > maxTemp {
 		return fmt.Errorf("minTemp (%g) ne sme biti večja od maxTemp (%g)", minTemp, maxTemp)

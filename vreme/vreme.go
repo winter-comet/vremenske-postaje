@@ -1,15 +1,32 @@
+// Package vreme beleži temperaturne meritve vremenskih postaj in izpisuje
+// njihovo statistiko.
+//
+// Postaje hranimo v slovarju, v katerem je ključ oznaka postaje (npr. "LJ01"),
+// vrednost pa [Postaja]. Ker so polja strukture Postaja neizvožena, postajo
+// ustvarimo s funkcijo [DodajPostajo], meritve pa ji dodajamo s funkcijo
+// [DodajMeritev]:
+//
+//	postaje := make(map[string]vreme.Postaja)
+//	vreme.DodajPostajo(postaje, "LJ01", "Ljubljana Bežigrad", "Ljubljana")
+//	vreme.DodajMeritev(postaje, "LJ01", 18.2, -50, 50)
+//	vreme.IzpisMeritev(postaje)
+//	vreme.IzpisPorocila(postaje, 3)
 package vreme
 
 import (
 	"fmt"
 )
 
+// Postaja je vremenska postaja z imenom, krajem in izmerjenimi temperaturami
+// v °C. Novo postajo ustvarimo s funkcijo [DodajPostajo].
 type Postaja struct {
 	ime     string
 	kraj    string
 	meritve []float64
 }
 
+// DodajMeritev postaji z dano oznako doda meritev temperature v °C. Meritev
+// je veljavna, če leži na intervalu [minTemp, maxTemp].
 func DodajMeritev(postaje map[string]Postaja, oznaka string, temperatura float64, minTemp float64, maxTemp float64) {
 	_, obstaja := postaje[oznaka]
 	if !obstaja {
@@ -27,6 +44,8 @@ func DodajMeritev(postaje map[string]Postaja, oznaka string, temperatura float64
 	postaje[oznaka] = postaja
 }
 
+// DodajPostajo v slovar postaje doda novo postajo brez meritev z dano oznako,
+// imenom in krajem. Obstoječe postaje z isto oznako ne spremeni.
 func DodajPostajo(postaje map[string]Postaja, oznaka string, ime string, kraj string) {
 	if _, obstaja := postaje[oznaka]; obstaja {
 		fmt.Printf("Zapis o postaji \"%s\" že obstaja\n", oznaka)
@@ -40,6 +59,7 @@ func DodajPostajo(postaje map[string]Postaja, oznaka string, ime string, kraj st
 	}
 }
 
+// IzpisMeritev za vsako postajo izpiše oznako, ime, kraj in vse meritve.
 func IzpisMeritev(postaje map[string]Postaja) {
 	fmt.Println("MERITVE:")
 	for ključ, vrednost := range postaje {
@@ -47,6 +67,15 @@ func IzpisMeritev(postaje map[string]Postaja) {
 	}
 }
 
+// IzpisPorocila za vsako postajo izpiše najnižjo, najvišjo in povprečno
+// temperaturo ter opis glede na povprečje:
+//
+//   - Vroče, če je povprečje vsaj 25 °C,
+//   - Toplo, če je med 15 °C in 25 °C,
+//   - Hladno, če je med 5 °C in 15 °C,
+//   - Mrzlo, če je pod 5 °C.
+//
+// Za postajo z manj kot stMeritev meritvami izpiše "premalo meritev".
 func IzpisPorocila(postaje map[string]Postaja, stMeritev int) {
 	fmt.Println("POROČILO:")
 	for ključ, vrednost := range postaje {
@@ -74,6 +103,9 @@ func IzpisPorocila(postaje map[string]Postaja, stMeritev int) {
 	}
 }
 
+// statistika vrne najnižjo, najvišjo in povprečno temperaturo postaje z dano
+// oznako. Če postaja ne obstaja ali ima manj kot stMeritev meritev, vrne
+// ok == false.
 func statistika(postaje map[string]Postaja, oznaka string, stMeritev int) (najnizja, najvisja, povprecna float64, ok bool) {
 	_, obstaja := postaje[oznaka]
 	if !obstaja {
